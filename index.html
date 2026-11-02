@@ -1,0 +1,375 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>BugTrack - Bug Tracking System</title>
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: Arial, sans-serif;
+        }
+
+        body {
+            background: #f4f7fb;
+            color: #1e293b;
+        }
+
+        header {
+            background: #172554;
+            color: white;
+            padding: 22px 7%;
+        }
+
+        header h1 {
+            font-size: 27px;
+        }
+
+        header p {
+            margin-top: 7px;
+            color: #cbd5e1;
+        }
+
+        main {
+            max-width: 1100px;
+            margin: 30px auto;
+            padding: 0 20px;
+        }
+
+        .stats {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 16px;
+            margin-bottom: 25px;
+        }
+
+        .card, .panel {
+            background: white;
+            padding: 20px;
+            border-radius: 12px;
+            box-shadow: 0 3px 12px #0f172a0d;
+        }
+
+        .card p {
+            color: #64748b;
+            font-size: 14px;
+        }
+
+        .card h2 {
+            margin-top: 12px;
+            font-size: 30px;
+        }
+
+        .panel h2 {
+            margin-bottom: 20px;
+        }
+
+        form {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 16px;
+        }
+
+        .field {
+            display: flex;
+            flex-direction: column;
+            gap: 7px;
+        }
+
+        .field.full {
+            grid-column: 1 / -1;
+        }
+
+        input, select, textarea {
+            width: 100%;
+            padding: 11px;
+            border: 1px solid #cbd5e1;
+            border-radius: 7px;
+            font-size: 14px;
+        }
+
+        textarea {
+            resize: vertical;
+            min-height: 90px;
+        }
+
+        button {
+            border: none;
+            background: #2563eb;
+            color: white;
+            padding: 12px 18px;
+            border-radius: 7px;
+            cursor: pointer;
+            font-weight: bold;
+        }
+
+        button:hover {
+            background: #1d4ed8;
+        }
+
+        .bugs-panel {
+            margin-top: 25px;
+        }
+
+        .table-wrap {
+            overflow-x: auto;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            min-width: 650px;
+        }
+
+        th, td {
+            text-align: left;
+            padding: 13px;
+            border-bottom: 1px solid #e2e8f0;
+        }
+
+        th {
+            color: #64748b;
+            font-size: 13px;
+        }
+
+        .status {
+            padding: 5px 9px;
+            border-radius: 20px;
+            background: #dbeafe;
+            color: #1d4ed8;
+            font-size: 12px;
+        }
+
+        .delete-btn {
+            background: #dc2626;
+            padding: 7px 10px;
+        }
+
+        .delete-btn:hover {
+            background: #b91c1c;
+        }
+
+        .empty {
+            text-align: center;
+            color: #64748b;
+            padding: 25px;
+        }
+
+        @media (max-width: 700px) {
+            .stats {
+                grid-template-columns: repeat(2, 1fr);
+            }
+
+            form {
+                grid-template-columns: 1fr;
+            }
+
+            .field.full {
+                grid-column: auto;
+            }
+
+            header h1 {
+                font-size: 23px;
+            }
+        }
+    </style>
+</head>
+<body>
+
+<header>
+    <h1>BugTrack</h1>
+    <p>Bug Tracking & Software Testing System</p>
+</header>
+
+<main>
+    <section class="stats">
+        <div class="card">
+            <p>Total Bugs</p>
+            <h2 id="totalBugs">0</h2>
+        </div>
+        <div class="card">
+            <p>Open Bugs</p>
+            <h2 id="openBugs">0</h2>
+        </div>
+        <div class="card">
+            <p>In Progress</p>
+            <h2 id="progressBugs">0</h2>
+        </div>
+        <div class="card">
+            <p>Resolved</p>
+            <h2 id="resolvedBugs">0</h2>
+        </div>
+    </section>
+
+    <section class="panel">
+        <h2>Report a Bug</h2>
+
+        <form id="bugForm">
+            <div class="field">
+                <label for="bugTitle">Bug Title</label>
+                <input id="bugTitle" type="text"
+                       placeholder="Enter bug title" required>
+            </div>
+
+            <div class="field">
+                <label for="severity">Severity</label>
+                <select id="severity" required>
+                    <option value="Low">Low</option>
+                    <option value="Medium" selected>Medium</option>
+                    <option value="High">High</option>
+                    <option value="Critical">Critical</option>
+                </select>
+            </div>
+
+            <div class="field">
+                <label for="assignedTo">Assign Developer</label>
+                <input id="assignedTo" type="text"
+                       placeholder="Developer name" required>
+            </div>
+
+            <div class="field">
+                <label for="status">Status</label>
+                <select id="status">
+                    <option>Open</option>
+                    <option>In Progress</option>
+                    <option>Resolved</option>
+                </select>
+            </div>
+
+            <div class="field full">
+                <label for="description">Bug Description</label>
+                <textarea id="description"
+                          placeholder="Describe the bug..." required></textarea>
+            </div>
+
+            <div class="field full">
+                <button type="submit">Submit Bug Report</button>
+            </div>
+        </form>
+    </section>
+
+    <section class="panel bugs-panel">
+        <h2>Reported Bugs</h2>
+
+        <div class="table-wrap">
+            <table>
+                <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>Bug Title</th>
+                        <th>Severity</th>
+                        <th>Developer</th>
+                        <th>Status</th>
+                        <th>Action</th>
+                    </tr>
+                </thead>
+                <tbody id="bugList">
+                    <tr>
+                        <td colspan="6" class="empty">
+                            No bugs reported yet.
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </section>
+</main>
+
+<script>
+    const bugForm = document.getElementById("bugForm");
+    const bugList = document.getElementById("bugList");
+
+    let bugs = [];
+    let nextId = 1;
+
+    bugForm.addEventListener("submit", function (event) {
+        event.preventDefault();
+
+        const bug = {
+            id: nextId++,
+            title: document.getElementById("bugTitle").value.trim(),
+            severity: document.getElementById("severity").value,
+            developer: document.getElementById("assignedTo").value.trim(),
+            status: document.getElementById("status").value,
+            description: document.getElementById("description").value.trim()
+        };
+
+        if (!bug.title || !bug.developer || !bug.description) {
+            alert("Please fill in all required fields.");
+            return;
+        }
+
+        bugs.push(bug);
+        bugForm.reset();
+        renderBugs();
+    });
+
+    function renderBugs() {
+        bugList.replaceChildren();
+
+        if (bugs.length === 0) {
+            const row = document.createElement("tr");
+            const cell = document.createElement("td");
+
+            cell.colSpan = 6;
+            cell.className = "empty";
+            cell.textContent = "No bugs reported yet.";
+
+            row.appendChild(cell);
+            bugList.appendChild(row);
+        }
+
+        bugs.forEach(function (bug) {
+            const row = document.createElement("tr");
+
+            [
+                bug.id,
+                bug.title,
+                bug.severity,
+                bug.developer,
+                bug.status
+            ].forEach(function (value) {
+                const cell = document.createElement("td");
+                cell.textContent = value;
+
+                if (value === bug.status) {
+                    const badge = document.createElement("span");
+                    badge.className = "status";
+                    badge.textContent = bug.status;
+                    cell.replaceChildren(badge);
+                }
+
+                row.appendChild(cell);
+            });
+
+            const actionCell = document.createElement("td");
+            const deleteButton = document.createElement("button");
+
+            deleteButton.textContent = "Delete";
+            deleteButton.className = "delete-btn";
+            deleteButton.addEventListener("click", function () {
+                bugs = bugs.filter(function (item) {
+                    return item.id !== bug.id;
+                });
+                renderBugs();
+            });
+
+            actionCell.appendChild(deleteButton);
+            row.appendChild(actionCell);
+            bugList.appendChild(row);
+        });
+
+        document.getElementById("totalBugs").textContent = bugs.length;
+        document.getElementById("openBugs").textContent =
+            bugs.filter(bug => bug.status === "Open").length;
+        document.getElementById("progressBugs").textContent =
+            bugs.filter(bug => bug.status === "In Progress").length;
+        document.getElementById("resolvedBugs").textContent =
+            bugs.filter(bug => bug.status === "Resolved").length;
+    }
+</script>
+
+</body>
+</html>
